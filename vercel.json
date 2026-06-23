@@ -1,0 +1,10 @@
+{
+  "name": "forge-landing",
+  "version": 2,
+  "public": true,
+  "buildCommand": "echo 'Static site'",
+  "outputDirectory": ".",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
