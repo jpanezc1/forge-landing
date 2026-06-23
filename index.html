@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FORGE — Software a medida para cualquier negocio. Calculador de presupuesto interactivo. Diseño, desarrollo e implementación en 14 días.">
+  <title>FORGE — Software Personalizado para tu Negocio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --void:#0c0c0f;
+      --deep:#090910;
+      --surface:#0f0f14;
+      --border:#18181f;
+      --border2:#2e2e3a;
+      --muted:#4a4a5a;
+      --subtle:#6e6e82;
+      --lav:#9b8fa0;
+      --lav-lt:#c8c2d0;
+      --bone:#e8e4dc;
+      --white:#f5f2ee;
+      --lav-dim:rgba(155,143,160,.08);
+      --lav-border:rgba(155,143,160,.18);
+      --gold:#d4af37;
+      --green:#1e5c3a;
+      --amber:#d97706;
+    }
+    html,body{background:var(--void);color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;min-height:100%;line-height:1.6}
+    body{display:flex;flex-direction:column}
+    .forge-mark{position:fixed;top:20px;left:20px;font-family:'DM Mono',monospace;font-weight:600;font-size:1.1rem;letter-spacing:.04em;z-index:999;mix-blend-mode:difference}
+    .forge-mark span{color:var(--lav)}
+    a{color:var(--lav-lt);text-decoration:none}
+    button{cursor:pointer;border:none;border-radius:8px;font-family:inherit;transition:.2s}
+
+    /* NAVBAR */
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(12,12,15,.95);border-bottom:0.5px solid var(--border);backdrop-filter:blur(12px);padding:16px 32px}
+    .navbar-wrap{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .nav-left{display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:.75rem}
+    .forge-mark-inline{font-weight:700;color:var(--white);letter-spacing:-.02em}
+    .forge-mark-inline span{color:var(--lav)}
+    .nav-separator{color:var(--subtle);border-left:0.5px solid var(--border2);padding-left:12px;letter-spacing:.05em;text-transform:uppercase;font-size:.7rem}
+    .nav-right{display:flex;gap:12px;align-items:center}
+    .nav-link{font-size:.75rem;color:var(--subtle);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:4px;transition:color .15s,background .15s;font-family:'DM Mono',monospace}
+    .nav-link:hover{color:var(--lav-lt)}
+    .nav-link.active{color:var(--lav-lt);background:rgba(155,143,160,.08)}
+    .cta-btn{background:var(--lav);color:var(--void);padding:6px 12px;font-weight:600;font-size:.75rem;border-radius:4px;text-decoration:none;letter-spacing:.06em;font-family:'DM Mono',monospace;margin-left:8px;transition:opacity .15s;white-space:nowrap}
+    .cta-btn:hover{opacity:.82}
+    @media(max-width:768px){.nav-separator{display:none}.nav-link{padding:6px 7px;font-size:.7rem}}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px;text-align:center;background:linear-gradient(135deg,rgba(9,9,16,.8),rgba(12,12,15,.9));position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(155,143,160,.05),transparent);pointer-events:none}
+    .hero-content{position:relative;z-index:1;max-width:950px}
+    .hero h1{font-size:clamp(2.5rem,8vw,4.8rem);font-weight:800;letter-spacing:-.02em;margin-bottom:20px;color:var(--white);line-height:1.2}
+    .hero h1 span{color:var(--lav)}
+    .hero p{font-size:1.2rem;color:var(--lav-lt);margin-bottom:40px;line-height:1.7}
+    .hero-btns{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
+    .btn-primary{background:var(--lav);color:var(--void);padding:16px 40px;font-weight:700;font-size:1.05rem;border-radius:8px;cursor:pointer;display:inline-block;text-decoration:none}
+    .btn-secondary{background:var(--surface);color:var(--lav-lt);padding:16px 40px;font-weight:600;border:2px solid var(--lav-border);border-radius:8px;cursor:pointer;display:inline-block;text-decoration:none}
+    .btn-primary:hover,.btn-secondary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(155,143,160,.2)}
+
+    /* STATS ROW */
+    .stats-row{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin-top:50px}
+    .stat{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .stat-num{font-size:2.2rem;font-weight:800;color:var(--amber)}
+    .stat-label{font-size:.9rem;color:var(--subtle);text-transform:uppercase;letter-spacing:.05em}
+
+    /* SECTIONS */
+    section{padding:80px 32px}
+    .section-wrap{max-width:1400px;margin:0 auto}
+    .section-title{font-size:2.5rem;font-weight:800;margin-bottom:50px;text-align:center}
+    .section-title span{color:var(--lav)}
+
+
+    /* SERVICIOS (MÓDULOS) */
+    .servicios{background:var(--surface)}
+    .servicios-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:30px}
+    .servicio-card{background:var(--void);border:2px solid var(--border);border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:20px;transition:.3s;cursor:pointer}
+    .servicio-card:hover{border-color:var(--lav);box-shadow:0 0 40px rgba(155,143,160,.2);transform:translateY(-4px)}
+    .servicio-icon{font-size:3rem}
+    .servicio-nombre{font-size:1.5rem;font-weight:700;color:var(--white)}
+    .servicio-desc{color:var(--subtle);font-size:.95rem;line-height:1.6}
+    .servicio-features{list-style:none;margin-top:20px}
+    .servicio-features li{font-size:.9rem;color:var(--lav-lt);display:flex;gap:8px;margin:8px 0}
+    .servicio-features li::before{content:'✓';color:var(--amber);font-weight:700;flex-shrink:0}
+
+    /* PROCESO */
+    .proceso{background:var(--void)}
+    .proceso-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;margin-top:50px}
+    .paso{display:flex;flex-direction:column;gap:20px;text-align:center}
+    .paso-num{width:60px;height:60px;background:var(--lav);color:var(--void);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;margin:0 auto}
+    .paso-titulo{font-size:1.3rem;font-weight:700;color:var(--white)}
+    .paso-desc{color:var(--subtle);font-size:.95rem;line-height:1.6}
+    .paso-tiempo{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--amber);font-weight:600;text-transform:uppercase;margin-top:10px}
+
+    /* CASOS */
+    .casos{background:var(--surface)}
+    .casos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:40px}
+    .caso-card{background:var(--void);border:1px solid var(--border);border-radius:16px;padding:40px;border-left:4px solid var(--amber)}
+    .caso-header{margin-bottom:20px}
+    .caso-tipo{font-family:'DM Mono',monospace;font-size:.75rem;background:rgba(155,143,160,.15);color:var(--lav);padding:4px 12px;border-radius:20px;text-transform:uppercase;display:inline-block}
+    .caso-titulo{font-size:1.4rem;font-weight:700;color:var(--white);margin-top:12px}
+    .caso-desc{color:var(--subtle);font-size:.95rem;margin-top:8px}
+    .caso-resultado{background:rgba(155,143,160,.05);border-left:3px solid var(--lav);padding:16px;border-radius:8px;margin:20px 0;font-size:.95rem;color:var(--lav-lt)}
+    .caso-before-after{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+    .ba-box{background:var(--border);padding:12px;border-radius:8px;text-align:center}
+    .ba-label{font-size:.8rem;color:var(--subtle);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+    .ba-valor{font-size:1.3rem;font-weight:700;color:var(--amber)}
+
+    /* CONTACTO */
+    .contacto{background:linear-gradient(135deg,rgba(9,9,16,.9),rgba(12,12,15,.95));padding:100px 32px}
+    .contacto-wrap{max-width:900px;margin:0 auto}
+    .contacto-title{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:60px}
+    .contacto-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+    .contacto-form{display:flex;flex-direction:column;gap:20px}
+    .form-group{display:flex;flex-direction:column;gap:8px}
+    .form-group label{font-size:.95rem;color:var(--lav-lt);font-weight:500}
+    .form-group input,.form-group textarea,.form-group select{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--white);font-family:inherit;font-size:.95rem;outline:none}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--lav);box-shadow:0 0 0 3px rgba(155,143,160,.1)}
+    .form-group textarea{resize:vertical;min-height:120px}
+    .form-submit{background:var(--lav);color:var(--void);padding:16px;font-weight:700;font-size:1rem;border-radius:8px;cursor:pointer}
+    .form-submit:hover{background:var(--lav-lt)}
+    .contacto-info{display:flex;flex-direction:column;gap:40px}
+    .contacto-item{display:flex;gap:16px}
+    .contacto-icon{font-size:2rem;flex-shrink:0}
+    .contacto-content h3{font-size:1.2rem;margin-bottom:8px}
+    .contacto-content p{color:var(--subtle);font-size:.95rem}
+
+    /* FOOTER */
+    footer{background:var(--deep);padding:40px 32px;text-align:center;color:var(--subtle);border-top:1px solid var(--border)}
+
+    @media(max-width:1024px){
+      .calculador-grid{grid-template-columns:1fr}
+      .presupuesto-sidebar{position:static;top:auto}
+      .contacto-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:768px){
+      .modulos-grid{grid-template-columns:1fr}
+      .caso-before-after{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="forge-mark">FORGE<span>.</span></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-wrap">
+      <div class="nav-left">
+        <span class="forge-mark-inline">FORGE<span>.</span></span>
+        <span class="nav-separator">Software a Medida</span>
+      </div>
+      <div class="nav-right">
+        <a class="nav-link active" href="#inicio">Propuesta</a>
+        <a class="nav-link" href="#modulos">Módulos</a>
+        <a class="nav-link" href="#casos">Casos</a>
+        <a class="nav-link" href="#proceso">Proceso</a>
+        <a class="cta-btn" href="FORGE_landing_calculador.html">Calculador →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Software a <span>medida</span> para tu negocio</h1>
+      <p>Diseño, desarrollo e implementación en 20 días. Acompañamiento y asesoría en migración de tu sistema anterior. Desde Bs 12,500.</p>
+      <div class="hero-btns">
+        <a class="btn-primary" href="FORGE_landing_calculador.html">Calcular Presupuesto</a>
+        <a class="btn-secondary" href="#modulos">Ver Módulos</a>
+      </div>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num">20</div>
+          <div class="stat-label">Días Implementación</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Migración Asistida</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">Soporte Mes 1</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- INCLUIDO EN BASE -->
+  <section class="servicios" style="background:var(--void)">
+    <div class="section-wrap">
+      <h2 class="section-title">¿Qué incluye tu <span>Implementación Base</span>?</h2>
+      <p style="text-align:center;color:var(--lav-lt);margin-bottom:50px;max-width:900px;margin-left:auto;margin-right:auto;font-size:1.05rem;line-height:1.8">
+        Tu implementación base <strong style="color:var(--amber)">Bs 12,500</strong> es un sistema completo end-to-end de tu negocio: desde la producción/compra hasta la venta, almacén, punto de venta, contabilidad automática y reportes gerenciales. Diseñado exactamente para cómo operas hoy.
+      </p>
+      <div class="servicios-grid">
+        <div class="servicio-card">
+          <div class="servicio-icon">📚</div>
+          <div class="servicio-nombre">Catálogo & Codificación</div>
+          <div class="servicio-desc">Gestión completa de productos y variantes</div>
+          <ul class="servicio-features">
+            <li>Carga de referencias con variantes (talla, color, material)</li>
+            <li>Código de barras único por producto</li>
+            <li>Búsqueda y filtros avanzados</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📥</div>
+          <div class="servicio-nombre">Recepción de Producción</div>
+          <div class="servicio-desc">Trazabilidad completa desde producción</div>
+          <ul class="servicio-features">
+            <li>Registro de ingreso desde talleres</li>
+            <li>Control de planchado y etiquetado</li>
+            <li>Trazabilidad de lotes por fecha</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📦</div>
+          <div class="servicio-nombre">Control de Inventario</div>
+          <div class="servicio-desc">Stock en tiempo real multi-ubicación</div>
+          <ul class="servicio-features">
+            <li>Stock simultáneo almacén + tiendas</li>
+            <li>Alertas de stock mínimo</li>
+            <li>Visibilidad total del sistema</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">🛒</div>
+          <div class="servicio-nombre">Punto de Venta (POS)</div>
+          <div class="servicio-desc">Venta integrada con descuento automático</div>
+          <ul class="servicio-features">
+            <li>Escaneo de código de barras</li>
+            <li>Descuento automático de stock</li>
+            <li>Carrito dinámico y rápido</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">💳</div>
+          <div class="servicio-nombre">Facturación & Métodos de Pago</div>
+          <div class="servicio-desc">Múltiples formas de pago integradas</div>
+          <ul class="servicio-features">
+            <li>QR, Linkser, efectivo, USDT, tarjeta</li>
+            <li>Separación facturado vs no facturado</li>
+            <li>Recibos automáticos por venta</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📊</div>
+          <div class="servicio-nombre">Dashboard Gerencial</div>
+          <div class="servicio-desc">Reportes y métricas en tiempo real</div>
+          <ul class="servicio-features">
+            <li>Ventas diarias/semanales/mensuales</li>
+            <li>Productos más vendidos y análisis</li>
+            <li>Registro de accesos del equipo</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">🏛️</div>
+          <div class="servicio-nombre">Facturación Electrónica (SIAT)</div>
+          <div class="servicio-desc">Integración automática tributaria</div>
+          <ul class="servicio-features">
+            <li>Facturación automática vía API SIAT</li>
+            <li>CUF/CUFD y QR incluidos</li>
+            <li>Modo "pendiente" sin conexión</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">✓</div>
+          <div class="servicio-nombre">Auditoría & Conciliación Rápida</div>
+          <div class="servicio-desc">Verificación automática de inventario</div>
+          <ul class="servicio-features">
+            <li>Conteo físico con escaneo continuo</li>
+            <li>Cruce automático contra sistema</li>
+            <li>Detección de faltantes, sobrantes y fugas</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">💰</div>
+          <div class="servicio-nombre">Estructura de Costos</div>
+          <div class="servicio-desc">Calculadora de márgenes y rentabilidad</div>
+          <ul class="servicio-features">
+            <li>Cálculo de costo final por producto</li>
+            <li>Gastos producción, admin y operativos</li>
+            <li>Análisis de margen por línea</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📖</div>
+          <div class="servicio-nombre">Contabilidad Completa</div>
+          <div class="servicio-desc">Libro diario automático y estado de resultados</div>
+          <ul class="servicio-features">
+            <li>Asientos automáticos desde ventas</li>
+            <li>Plan de cuentas y mayor con saldos</li>
+            <li>Estado de resultados mensual</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background:rgba(155,143,160,.1);border-left:4px solid var(--lav);padding:30px;border-radius:8px;margin-top:50px;text-align:center">
+        <p style="color:var(--lav-lt);font-size:1.1rem;margin-bottom:20px">
+          <strong>✓ Implementación en 20 días</strong><br>
+          <strong>✓ Migración asistida de tu sistema anterior</strong><br>
+          <strong>✓ Capacitación completa de tu equipo</strong><br>
+          <strong>✓ 1 mes de soporte gratis 24/7</strong><br>
+          <strong>✓ Luego Bs 450/mes de mantenimiento</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÓDULOS DETALLADOS -->
+  <section class="servicios" id="modulos">
+    <div class="section-wrap">
+      <h2 class="section-title">Módulos <span>Disponibles</span></h2>
+      <div class="servicios-grid">
+        <div class="servicio-card">
+          <div class="servicio-icon">⊞</div>
+          <div class="servicio-nombre">Dashboard (Inicio)</div>
+          <div class="servicio-desc">Vista general del negocio en tiempo real.</div>
+          <ul class="servicio-features">
+            <li>KPIs del día y mes</li>
+            <li>Ventas brutas y netas</li>
+            <li>Stock total por marca</li>
+            <li>Gráficos de evolución mensual</li>
+            <li>Top productos más vendidos</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">◈</div>
+          <div class="servicio-nombre">Caja (POS)</div>
+          <div class="servicio-desc">Punto de venta integrado con múltiples opciones de pago.</div>
+          <ul class="servicio-features">
+            <li>Escaneo de código de barras</li>
+            <li>Carrito de compra dinámico</li>
+            <li>Múltiples formas de pago</li>
+            <li>Descuentos y promociones</li>
+            <li>Emisión de recibos/facturas</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📦</div>
+          <div class="servicio-nombre">Inventario</div>
+          <div class="servicio-desc">Gestión completa de stock con trazabilidad.</div>
+          <ul class="servicio-features">
+            <li>Registro de productos por marca</li>
+            <li>Control de stock en tiempo real</li>
+            <li>Categorización y búsqueda</li>
+            <li>Historial de movimientos</li>
+            <li>Alertas de stock bajo</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">◫</div>
+          <div class="servicio-nombre">Marcas</div>
+          <div class="servicio-desc">Gestión de múltiples líneas/marcas independientes.</div>
+          <ul class="servicio-features">
+            <li>Crear y editar marcas</li>
+            <li>Asignar productos por marca</li>
+            <li>Perfiles independientes</li>
+            <li>Control de acceso por marca</li>
+            <li>Reportes por marca</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">◎</div>
+          <div class="servicio-nombre">Liquidar (Cierre Contable)</div>
+          <div class="servicio-desc">Cierre mensual automático y conciliación de cuentas.</div>
+          <ul class="servicio-features">
+            <li>Cierre por marca automático</li>
+            <li>Conciliación de ventas vs. caja</li>
+            <li>Cálculo de utilidades netas</li>
+            <li>Desglose por método de pago</li>
+            <li>Reporte mensual detallado</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">↩</div>
+          <div class="servicio-nombre">Retiros</div>
+          <div class="servicio-desc">Registro y trazabilidad de devoluciones y retiros.</div>
+          <ul class="servicio-features">
+            <li>Registro de retiros por producto</li>
+            <li>Motivo y destinatario</li>
+            <li>Asignación por marca</li>
+            <li>Historial completo</li>
+            <li>Control de cantidad vs. sistema</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📝</div>
+          <div class="servicio-nombre">Ventas (Historial)</div>
+          <div class="servicio-desc">Reportes y análisis detallados de todas las operaciones.</div>
+          <ul class="servicio-features">
+            <li>Historial completo de ventas</li>
+            <li>Filtros por fecha, marca, vendedor</li>
+            <li>Desglose por producto</li>
+            <li>Análisis de métodos de pago</li>
+            <li>Exportación a Excel</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📐</div>
+          <div class="servicio-nombre">Costos (Estructura)</div>
+          <div class="servicio-desc">Análisis profundo de márgenes y estructura de costos.</div>
+          <ul class="servicio-features">
+            <li>Costo unitario por producto</li>
+            <li>Margen de utilidad por línea</li>
+            <li>Análisis por categoría</li>
+            <li>Comparativa de precios</li>
+            <li>Reportes de rentabilidad</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">⌖</div>
+          <div class="servicio-nombre">Auditoría (Verificación)</div>
+          <div class="servicio-desc">Verificación física de inventario con control.</div>
+          <ul class="servicio-features">
+            <li>Sesión de verificación por marca</li>
+            <li>Escaneo de códigos en campo</li>
+            <li>Detección de faltantes/sobrantes</li>
+            <li>Doble conteo automático</li>
+            <li>Análisis de pérdidas</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">🎁</div>
+          <div class="servicio-nombre">Gift Cards</div>
+          <div class="servicio-desc">Emisión y canje de tarjetas de regalo.</div>
+          <ul class="servicio-features">
+            <li>Crear gift cards con monto</li>
+            <li>Código único y seguro</li>
+            <li>Canje en punto de venta</li>
+            <li>Historial de transacciones</li>
+            <li>Reportes de utilización</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">⚙️</div>
+          <div class="servicio-nombre">Config (Configuración)</div>
+          <div class="servicio-desc">Administración de usuarios, equipo y seguridad.</div>
+          <ul class="servicio-features">
+            <li>Gestión de usuarios y roles</li>
+            <li>Permisos por rol (Admin/Brand/Staff)</li>
+            <li>Cambio de contraseña</li>
+            <li>Auditoría de acceso</li>
+            <li>Seguridad y backup</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">💰</div>
+          <div class="servicio-nombre">Estructura de Costos</div>
+          <div class="servicio-desc">Análisis completo de márgenes, costos y rentabilidad.</div>
+          <ul class="servicio-features">
+            <li>Costo unitario por producto</li>
+            <li>Margen de utilidad por línea</li>
+            <li>Análisis detallado por categoría</li>
+            <li>Comparativa de precios y competencia</li>
+            <li>Gestión de costos fijos y variables</li>
+            <li>Reportes de rentabilidad por período</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">📊</div>
+          <div class="servicio-nombre">Sistema Contable Completo</div>
+          <div class="servicio-desc">Contabilidad integrada y cierre fiscal automático.</div>
+          <ul class="servicio-features">
+            <li>Asiento contable automático de ventas</li>
+            <li>Balance general en tiempo real</li>
+            <li>Estado de resultados automático</li>
+            <li>Cierre de período fiscal</li>
+            <li>Conciliación bancaria automática</li>
+            <li>Reportes tributarios y fiscales</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASOS DE ÉXITO -->
+  <section class="casos" id="casos">
+    <div class="section-wrap">
+      <h2 class="section-title">Casos de <span>Éxito</span></h2>
+      <div class="casos-grid">
+        <div class="caso-card">
+          <div class="caso-header">
+            <span class="caso-tipo">Retail - 19 Marcas</span>
+            <div class="caso-titulo">Toscana House</div>
+            <div class="caso-desc">Casa de modas multimarca de lujo</div>
+          </div>
+          <div class="caso-resultado">
+            Gestión simultánea de 19 líneas independientes. Cierre mensual que tardaba 8+ horas → 30 minutos. Precisión de stock 85% → 100%.
+          </div>
+          <div class="caso-before-after">
+            <div class="ba-box">
+              <div class="ba-label">Antes</div>
+              <div class="ba-valor">8+ horas</div>
+              <div class="ba-label" style="margin-top:8px;font-size:0.7rem">cierre manual</div>
+            </div>
+            <div class="ba-box">
+              <div class="ba-label">Después</div>
+              <div class="ba-valor">30 min</div>
+              <div class="ba-label" style="margin-top:8px;font-size:0.7rem">automático</div>
+            </div>
+          </div>
+          <div class="caso-resultado" style="border-left-color:var(--green);background:rgba(30,92,58,.08)">
+            ✓ Dashboard en tiempo real<br>
+            ✓ Cierre automático por marca<br>
+            ✓ Reportes avanzados
+          </div>
+        </div>
+
+        <div class="caso-card">
+          <div class="caso-header">
+            <span class="caso-tipo">Manufactura + Retail</span>
+            <div class="caso-titulo">André</div>
+            <div class="caso-desc">Tienda de ropa, producción y comercialización propia</div>
+          </div>
+          <div class="caso-resultado">
+            Sistema end-to-end: orden de producción → inventario → caja → facturación. ROI+ en mes 1. Margen por línea visible.
+          </div>
+          <div class="caso-before-after">
+            <div class="ba-box">
+              <div class="ba-label">Flujo</div>
+              <div class="ba-valor">5 pasos</div>
+              <div class="ba-label" style="margin-top:8px;font-size:0.7rem">integrados</div>
+            </div>
+            <div class="ba-box">
+              <div class="ba-label">ROI</div>
+              <div class="ba-valor">Mes 1</div>
+              <div class="ba-label" style="margin-top:8px;font-size:0.7rem">positivo</div>
+            </div>
+          </div>
+          <div class="caso-resultado" style="border-left-color:var(--green);background:rgba(30,92,58,.08)">
+            ✓ Orden de producción integrada<br>
+            ✓ Control de costos por línea<br>
+            ✓ Facturación automática
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESO -->
+  <section class="proceso" id="proceso">
+    <div class="section-wrap">
+      <h2 class="section-title">Cómo <span>Trabajamos</span></h2>
+      <div class="proceso-grid">
+        <div class="paso">
+          <div class="paso-num">1</div>
+          <div class="paso-titulo">Diagnóstico</div>
+          <div class="paso-desc">Entendemos tu negocio, desafíos, sistema actual y objetivos.</div>
+          <div class="paso-tiempo">Día 1-2</div>
+        </div>
+
+        <div class="paso">
+          <div class="paso-num">2</div>
+          <div class="paso-titulo">Diseño</div>
+          <div class="paso-desc">Diseñamos arquitectura, flujos y plan de migración de datos.</div>
+          <div class="paso-tiempo">Día 3-4</div>
+        </div>
+
+        <div class="paso">
+          <div class="paso-num">3</div>
+          <div class="paso-titulo">Desarrollo</div>
+          <div class="paso-desc">Construimos tu sistema personalizado con testing continuo.</div>
+          <div class="paso-tiempo">Día 5-14</div>
+        </div>
+
+        <div class="paso">
+          <div class="paso-num">4</div>
+          <div class="paso-titulo">Migración Asistida</div>
+          <div class="paso-desc">Acompañamos la migración de tu sistema anterior. Validación completa de datos.</div>
+          <div class="paso-tiempo">Día 15-17</div>
+        </div>
+
+        <div class="paso">
+          <div class="paso-num">5</div>
+          <div class="paso-titulo">Capacitación + Go-Live</div>
+          <div class="paso-desc">Entrenamientos intensivos y lanzamiento en producción.</div>
+          <div class="paso-tiempo">Día 18-19</div>
+        </div>
+
+        <div class="paso">
+          <div class="paso-num">6</div>
+          <div class="paso-titulo">Soporte 24/7</div>
+          <div class="paso-desc">Primer mes gratis. Soporte prioritario, ajustes y consultoría. Luego Bs 450/mes.</div>
+          <div class="paso-tiempo">Día 20+</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MIGRACIÓN Y ACOMPAÑAMIENTO -->
+  <section class="servicios" style="background:var(--void)">
+    <div class="section-wrap">
+      <h2 class="section-title">Migración y <span>Acompañamiento</span></h2>
+      <p style="text-align:center;color:var(--lav-lt);margin-bottom:40px;max-width:800px;margin-left:auto;margin-right:auto;font-size:1.05rem;line-height:1.8">
+        FORGE no solo implementa tu sistema, sino que <strong>acompaña y asesora</strong> la migración completa de tu sistema anterior. Garantizamos que ningún dato se pierda y que tu equipo esté completamente capacitado.
+      </p>
+      <div class="servicios-grid">
+        <div class="servicio-card">
+          <div class="servicio-icon">📋</div>
+          <div class="servicio-nombre">Auditoría de Datos Actuales</div>
+          <div class="servicio-desc">Revisamos y validamos todos tus datos existentes.</div>
+          <ul class="servicio-features">
+            <li>Mapeo completo de estructura actual</li>
+            <li>Identificación de inconsistencias</li>
+            <li>Plan de limpieza de datos</li>
+            <li>Backup seguro de información</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">🔄</div>
+          <div class="servicio-nombre">Migración de Datos</div>
+          <div class="servicio-desc">Transferencia segura y validada de tu información.</div>
+          <ul class="servicio-features">
+            <li>Importación automática de datos</li>
+            <li>Validación línea por línea</li>
+            <li>Reconciliación con sistema anterior</li>
+            <li>Verificación de integridad</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">👥</div>
+          <div class="servicio-nombre">Capacitación Intensiva</div>
+          <div class="servicio-desc">Entrenamientos para tu equipo en el nuevo sistema.</div>
+          <ul class="servicio-features">
+            <li>Sesiones de 2-3 horas cada una</li>
+            <li>Manual completo en PDF</li>
+            <li>Videos tutoriales grabados</li>
+            <li>Soporte en vivo durante transición</li>
+          </ul>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-icon">🎯</div>
+          <div class="servicio-nombre">Asesoría Post-Implementación</div>
+          <div class="servicio-desc">Apoyo continuo después del lanzamiento.</div>
+          <ul class="servicio-features">
+            <li>Mes 1 gratis 24/7 soporte</li>
+            <li>Ajustes y optimizaciones</li>
+            <li>Consultoría sobre procesos</li>
+            <li>Luego Bs 450/mes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="contacto" id="contacto">
+    <div class="contacto-wrap">
+      <h2 class="contacto-title">Diseñemos tu sistema <span>juntos</span></h2>
+      <p style="text-align:center;color:var(--lav-lt);margin-bottom:40px;font-size:0.95rem">
+        O usa nuestro <a href="FORGE_landing_calculador.html" style="color:var(--lav-lt);text-decoration:underline">calculador de presupuesto interactivo</a> para obtener una cotización en tiempo real.
+      </p>
+      <div class="contacto-grid">
+        <form class="contacto-form" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label for="nombre">Nombre Completo *</label>
+            <input type="text" id="nombre" name="nombre" required>
+          </div>
+          <div class="form-group">
+            <label for="empresa">Empresa / Negocio *</label>
+            <input type="text" id="empresa" name="empresa" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="telefono">Teléfono *</label>
+            <input type="tel" id="telefono" name="telefono" required>
+          </div>
+          <div class="form-group">
+            <label for="mensaje">Mensaje / Consulta</label>
+            <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos sobre tu negocio y sistema actual..."></textarea>
+          </div>
+          <button type="submit" class="form-submit">Enviar Consulta</button>
+        </form>
+
+        <div class="contacto-info">
+          <div class="contacto-item">
+            <div class="contacto-icon">📧</div>
+            <div class="contacto-content">
+              <h3>Email</h3>
+              <p><a href="mailto:juanpabloanezcirbian@gmail.com">juanpabloanezcirbian@gmail.com</a></p>
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon">📱</div>
+            <div class="contacto-content">
+              <h3>WhatsApp</h3>
+              <p><a href="https://wa.me/59176099651">+591 76099651</a></p>
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon">🚀</div>
+            <div class="contacto-content">
+              <h3>Implementación</h3>
+              <p>14 días desde confirmación</p>
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon">✅</div>
+            <div class="contacto-content">
+              <h3>Soporte Primer Mes</h3>
+              <p>Incluido en todos los presupuestos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 FORGE — Software Personalizado. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    function scrollTo(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const empresa = document.getElementById('empresa').value;
+      const email = document.getElementById('email').value;
+      const telefono = document.getElementById('telefono').value;
+      const mensaje = document.getElementById('mensaje').value;
+      const texto = `*NUEVA SOLICITUD DE PRESUPUESTO - FORGE*\n\n📋 *Cliente:*\nNombre: ${nombre}\nEmpresa: ${empresa}\nEmail: ${email}\nTeléfono: ${telefono}\n\n📝 *Mensaje:*\n${mensaje || 'Sin comentarios adicionales'}`;
+      const url = `https://wa.me/59176099651?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
