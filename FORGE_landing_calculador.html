@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FORGE — Software a medida para cualquier negocio. Calculador de presupuesto interactivo. Diseño, desarrollo e implementación en 14 días.">
+  <title>FORGE — Calculador de Presupuesto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --void:#0c0c0f;
+      --deep:#090910;
+      --surface:#0f0f14;
+      --border:#18181f;
+      --border2:#2e2e3a;
+      --muted:#4a4a5a;
+      --subtle:#6e6e82;
+      --lav:#9b8fa0;
+      --lav-lt:#c8c2d0;
+      --bone:#e8e4dc;
+      --white:#f5f2ee;
+      --lav-dim:rgba(155,143,160,.08);
+      --lav-border:rgba(155,143,160,.18);
+      --gold:#d4af37;
+      --green:#1e5c3a;
+      --amber:#d97706;
+    }
+    html,body{background:var(--void);color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;min-height:100%;line-height:1.6}
+    body{display:flex;flex-direction:column}
+    .forge-mark{position:fixed;top:20px;left:20px;font-family:'DM Mono',monospace;font-weight:600;font-size:1.1rem;letter-spacing:.04em;z-index:999;mix-blend-mode:difference}
+    .forge-mark span{color:var(--lav)}
+    a{color:var(--lav-lt);text-decoration:none}
+    button{cursor:pointer;border:none;border-radius:8px;font-family:inherit;transition:.2s}
+
+    /* NAVBAR */
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(12,12,15,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);padding:16px 32px}
+    .navbar-wrap{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .nav-left{display:flex;align-items:center;gap:20px;font-family:'DM Mono',monospace;font-size:.85rem}
+    .nav-right{display:flex;gap:20px;align-items:center}
+    .nav-link{font-size:.9rem;color:var(--lav-lt)}
+    .cta-btn{background:var(--lav);color:var(--void);padding:10px 20px;font-weight:600;font-size:.85rem;border-radius:8px}
+    @media(max-width:768px){.nav-right{display:none}}
+
+    /* HERO */
+    .hero{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center;background:linear-gradient(135deg,rgba(9,9,16,.8),rgba(12,12,15,.9));position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(155,143,160,.05),transparent);pointer-events:none}
+    .hero-content{position:relative;z-index:1;max-width:950px}
+    .hero h1{font-size:clamp(2.5rem,8vw,4.8rem);font-weight:800;letter-spacing:-.02em;margin-bottom:20px;color:var(--white);line-height:1.2}
+    .hero h1 span{color:var(--lav)}
+    .hero p{font-size:1.1rem;color:var(--lav-lt);margin-bottom:40px;line-height:1.7}
+
+    /* CALCULADOR */
+    .calculador{background:var(--surface);padding:80px 32px}
+    .calculador-wrap{max-width:1200px;margin:0 auto}
+    .calculador-title{font-size:2.2rem;font-weight:800;margin-bottom:50px;text-align:center}
+    .calculador-title span{color:var(--lav)}
+    .calculador-grid{display:grid;grid-template-columns:1fr 350px;gap:40px}
+
+    .modulos-section h3{font-size:1.3rem;font-weight:700;margin-bottom:30px;color:var(--white)}
+    .modulos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+    .modulo-card{background:var(--void);border:2px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:.3s}
+    .modulo-card:hover{border-color:var(--lav);box-shadow:0 0 20px rgba(155,143,160,.15)}
+    .modulo-card.selected{border-color:var(--lav);background:rgba(155,143,160,.1);box-shadow:0 0 30px rgba(155,143,160,.3)}
+    .modulo-header{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .modulo-checkbox{width:24px;height:24px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:transparent;cursor:pointer;font-size:0.9rem}
+    .modulo-card.selected .modulo-checkbox{background:var(--lav);border-color:var(--lav);color:var(--void)}
+    .modulo-name{font-weight:600;color:var(--white)}
+    .modulo-price{font-size:0.9rem;color:var(--amber);font-weight:700}
+    .modulo-desc{font-size:0.85rem;color:var(--subtle);line-height:1.5}
+
+    .addons-section{margin-top:40px}
+    .addons-section h3{font-size:1.3rem;font-weight:700;margin-bottom:20px;color:var(--white)}
+    .addon-item{background:var(--void);border:2px solid var(--border);border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;cursor:pointer;transition:.3s}
+    .addon-item:hover{border-color:var(--lav);background:rgba(155,143,160,.05)}
+    .addon-item.selected{border-color:var(--lav);background:rgba(155,143,160,.1)}
+    .addon-left{flex:1}
+    .addon-name{font-weight:600;color:var(--white);margin-bottom:4px}
+    .addon-desc{font-size:0.85rem;color:var(--subtle)}
+    .addon-price{color:var(--amber);font-weight:700}
+
+    /* PRESUPUESTO SIDEBAR */
+    .presupuesto-sidebar{position:sticky;top:100px;height:fit-content}
+    .presupuesto-box{background:var(--void);border:2px solid var(--lav);border-radius:12px;padding:30px;box-shadow:0 0 40px rgba(155,143,160,.2)}
+    .presupuesto-title{font-size:1.1rem;font-weight:700;color:var(--lav);margin-bottom:20px;text-align:center;text-transform:uppercase;letter-spacing:.05em}
+    .presupuesto-desglose{margin-bottom:20px}
+    .desglose-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.95rem}
+    .desglose-item.total{border-bottom:2px solid var(--lav);padding:15px 0;font-weight:700;color:var(--amber)}
+    .desglose-label{color:var(--lav-lt)}
+    .desglose-precio{color:var(--amber);text-align:right}
+    .presupuesto-monto{font-size:2.2rem;font-weight:800;color:var(--amber);text-align:center;margin:20px 0;padding:20px 0;border-top:2px solid var(--lav);border-bottom:2px solid var(--lav)}
+    .presupuesto-info{font-size:0.8rem;color:var(--subtle);text-align:center;margin-bottom:20px;line-height:1.5}
+    .presupuesto-btn{background:var(--lav);color:var(--void);padding:14px;font-weight:700;width:100%;border-radius:8px;text-align:center;display:block;text-decoration:none;margin-bottom:10px}
+    .presupuesto-btn:hover{background:var(--lav-lt)}
+    .presupuesto-reset{background:var(--border);color:var(--lav-lt);padding:10px;font-weight:600;width:100%;border-radius:8px;text-align:center;cursor:pointer}
+
+    /* CONTACTO */
+    .contacto{background:linear-gradient(135deg,rgba(9,9,16,.9),rgba(12,12,15,.95));padding:100px 32px}
+    .contacto-wrap{max-width:900px;margin:0 auto}
+    .contacto-title{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:60px}
+    .contacto-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+    .contacto-form{display:flex;flex-direction:column;gap:20px}
+    .form-group{display:flex;flex-direction:column;gap:8px}
+    .form-group label{font-size:.95rem;color:var(--lav-lt);font-weight:500}
+    .form-group input,.form-group textarea,.form-group select{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--white);font-family:inherit;font-size:.95rem;outline:none}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--lav);box-shadow:0 0 0 3px rgba(155,143,160,.1)}
+    .form-group textarea{resize:vertical;min-height:120px}
+    .form-submit{background:var(--lav);color:var(--void);padding:16px;font-weight:700;font-size:1rem;border-radius:8px}
+    .form-submit:hover{background:var(--lav-lt)}
+    .contacto-info{display:flex;flex-direction:column;gap:40px}
+    .contacto-item{display:flex;gap:16px}
+    .contacto-icon{font-size:2rem;flex-shrink:0}
+    .contacto-content h3{font-size:1.2rem;margin-bottom:8px}
+    .contacto-content p{color:var(--subtle);font-size:.95rem}
+
+    /* FOOTER */
+    footer{background:var(--deep);padding:40px 32px;text-align:center;color:var(--subtle);border-top:1px solid var(--border)}
+
+    @media(max-width:1024px){
+      .calculador-grid{grid-template-columns:1fr}
+      .presupuesto-sidebar{position:static;top:auto}
+    }
+    @media(max-width:768px){
+      .contacto-grid{grid-template-columns:1fr}
+      .modulos-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="forge-mark">FORGE<span>.</span></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-wrap">
+      <div class="nav-left">FORGE — Software Personalizado</div>
+      <div class="nav-right">
+        <a class="nav-link" href="#calculador">Presupuesto</a>
+        <a class="nav-link" href="#contacto">Contacto</a>
+        <button class="cta-btn" onclick="scrollTo('calculador')">Calcular Ahora</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Diseña tu sistema <span>a medida</span></h1>
+      <p>Elige los módulos que necesitas, agrega opciones adicionales y recibe tu presupuesto en tiempo real. Implementación en 14 días.</p>
+    </div>
+  </section>
+
+  <!-- CALCULADOR DE PRESUPUESTO -->
+  <section class="calculador" id="calculador">
+    <div class="calculador-wrap">
+      <h2 class="calculador-title">Configurador de <span>Presupuesto</span></h2>
+
+      <div class="calculador-grid">
+        <!-- MÓDULOS -->
+        <div>
+          <div class="modulos-section">
+            <h3>📦 Módulos Disponibles</h3>
+            <div class="modulos-grid">
+              <!-- ADMIN MODULES -->
+              <div class="modulo-card" data-modulo="inicio" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Dashboard (Inicio)</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">KPIs tiempo real, ventas, stock por marca</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="caja" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Caja (POS)</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Escaneo barras, múltiples pagos, recibos</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="inventario" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Inventario</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Control de stock, categorización, alertas</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="marcas" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Marcas</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Gestión de múltiples líneas independientes</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="liquidar" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Liquidar (Cierre)</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Cierre mensual, conciliación automática</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="retiros" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Retiros</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Registro y trazabilidad de devoluciones</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="ventas" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Ventas (Historial)</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Reportes y análisis de operaciones</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="cargas" data-precio="1000">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Cargas (Excel)</div>
+                    <div class="modulo-price">Bs 1,000</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Importación masiva con validación</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="giftcards" data-precio="1500">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Gift Cards</div>
+                    <div class="modulo-price">Bs 1,500</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Emisión y canje de tarjetas de regalo</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="costos" data-precio="2000">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Costos (Estructura)</div>
+                    <div class="modulo-price">Bs 2,000</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Análisis de márgenes y rentabilidad</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="auditoria" data-precio="1500">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Auditoría (Verificación)</div>
+                    <div class="modulo-price">Bs 1,500</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Verificación física con control de discrepancias</div>
+              </div>
+
+              <div class="modulo-card" data-modulo="config" data-precio="0">
+                <div class="modulo-header">
+                  <div class="modulo-checkbox">✓</div>
+                  <div>
+                    <div class="modulo-name">Config (Configuración)</div>
+                    <div class="modulo-price">Base</div>
+                  </div>
+                </div>
+                <div class="modulo-desc">Usuarios, roles, permisos y seguridad</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADD-ONS -->
+          <div class="addons-section">
+            <h3>➕ Opciones Adicionales</h3>
+
+            <div class="addon-item" data-addon="soporte-6m" data-precio="2000">
+              <div class="addon-left">
+                <div class="addon-name">🎯 Soporte Extendido (6 meses)</div>
+                <div class="addon-desc">Support prioritario + 2 llamadas/mes de consultoría</div>
+              </div>
+              <div class="addon-price">Bs 2,000</div>
+            </div>
+
+            <div class="addon-item" data-addon="soporte-12m" data-precio="3500">
+              <div class="addon-left">
+                <div class="addon-name">🎯 Soporte Premium (12 meses)</div>
+                <div class="addon-desc">Support 24/7 + 4 llamadas/mes de consultoría</div>
+              </div>
+              <div class="addon-price">Bs 3,500</div>
+            </div>
+
+            <div class="addon-item" data-addon="capacitacion" data-precio="1500">
+              <div class="addon-left">
+                <div class="addon-name">📚 Capacitación Intensiva</div>
+                <div class="addon-desc">3 sesiones de 2 horas cada una + manual en PDF</div>
+              </div>
+              <div class="addon-price">Bs 1,500</div>
+            </div>
+
+            <div class="addon-item" data-addon="integracion-siat" data-precio="2500">
+              <div class="addon-left">
+                <div class="addon-name">🔗 Integración SIAT</div>
+                <div class="addon-desc">Sincronización automática con sistema tributario</div>
+              </div>
+              <div class="addon-price">Bs 2,500</div>
+            </div>
+
+            <div class="addon-item" data-addon="app-mobile" data-precio="3000">
+              <div class="addon-left">
+                <div class="addon-name">📱 App Móvil (iOS/Android)</div>
+                <div class="addon-desc">Acceso completo desde dispositivos móviles</div>
+              </div>
+              <div class="addon-price">Bs 3,000</div>
+            </div>
+
+            <div class="addon-item" data-addon="reporteria-avanzada" data-precio="2000">
+              <div class="addon-left">
+                <div class="addon-name">📊 Reportería Avanzada + BI</div>
+                <div class="addon-desc">Dashboards personalizados + exportación de datos</div>
+              </div>
+              <div class="addon-price">Bs 2,000</div>
+            </div>
+
+            <div class="addon-item" data-addon="migracion-datos" data-precio="1500">
+              <div class="addon-left">
+                <div class="addon-name">🔄 Migración de Datos</div>
+                <div class="addon-desc">Importación desde sistema anterior + validación</div>
+              </div>
+              <div class="addon-price">Bs 1,500</div>
+            </div>
+
+            <div class="addon-item" data-addon="customizacion" data-precio="2000">
+              <div class="addon-left">
+                <div class="addon-name">⚙️ Customización Extra</div>
+                <div class="addon-desc">Campos/flujos personalizados adicionales (hasta 5)</div>
+              </div>
+              <div class="addon-price">Bs 2,000</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIDEBAR PRESUPUESTO -->
+        <div class="presupuesto-sidebar">
+          <div class="presupuesto-box">
+            <div class="presupuesto-title">Tu Presupuesto</div>
+
+            <div class="presupuesto-desglose" id="desglose">
+              <div class="desglose-item">
+                <span class="desglose-label">Implementación Base</span>
+                <span class="desglose-precio">Bs 12,500</span>
+              </div>
+              <div class="desglose-item">
+                <span class="desglose-label">Módulos Adicionales</span>
+                <span class="desglose-precio" id="modulos-precio">Bs 0</span>
+              </div>
+              <div class="desglose-item">
+                <span class="desglose-label">Opciones Adicionales</span>
+                <span class="desglose-precio" id="addons-precio">Bs 0</span>
+              </div>
+              <div class="desglose-item total">
+                <span class="desglose-label">Subtotal</span>
+                <span class="desglose-precio" id="subtotal">Bs 12,500</span>
+              </div>
+              <div class="desglose-item">
+                <span class="desglose-label">Mantenimiento Mensual</span>
+                <span class="desglose-precio">Bs 450</span>
+              </div>
+            </div>
+
+            <div class="presupuesto-monto" id="monto-total">Bs 12,500</div>
+
+            <div class="presupuesto-info">
+              ✓ Implementación: 14 días<br>
+              ✓ Primer mes de soporte<br>
+              ✓ Mantenimiento: Bs 450/mes
+            </div>
+
+            <a href="#contacto" class="presupuesto-btn" id="btn-presupuesto">Solicitar Presupuesto</a>
+            <button class="presupuesto-reset" onclick="resetCalculador()">Limpiar Selección</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="contacto" id="contacto">
+    <div class="contacto-wrap">
+      <h2 class="contacto-title">Diseñemos tu sistema <span>juntos</span></h2>
+      <div class="contacto-grid">
+        <form class="contacto-form" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label for="nombre">Nombre Completo *</label>
+            <input type="text" id="nombre" name="nombre" required>
+          </div>
+          <div class="form-group">
+            <label for="empresa">Empresa / Negocio *</label>
+            <input type="text" id="empresa" name="empresa" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="telefono">Teléfono *</label>
+            <input type="tel" id="telefono" name="telefono" required>
+          </div>
+          <div class="form-group">
+            <label for="mensaje">Mensaje / Consulta</label>
+            <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos sobre tu negocio y qué buscas lograr..."></textarea>
+          </div>
+          <button type="submit" class="form-submit">Enviar Presupuesto</button>
+        </form>
+
+        <div class="contacto-info">
+          <div class="contacto-item">
+            <div class="contacto-icon">📧</div>
+            <div class="contacto-content">
+              <h3>Email</h3>
+              <p><a href="mailto:juanpabloanezcirbian@gmail.com">juanpabloanezcirbian@gmail.com</a></p>
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon">📱</div>
+            <div class="contacto-content">
+              <h3>WhatsApp</h3>
+              <p><a href="https://wa.me/59176099651">+591 76099651</a></p>
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon">🚀</div>
+            <div class="contacto-content">
+              <h3>Implementación</h3>
+              <p>14 días desde confirmación</p>
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon">✅</div>
+            <div class="contacto-content">
+              <h3>Soporte Primer Mes</h3>
+              <p>Incluido en todos los presupuestos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 FORGE — Software Personalizado. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    const BASE_IMPLEMENTATION = 12500;
+    const MONTHLY_MAINTENANCE = 450;
+    let selectedModulos = [];
+    let selectedAddons = [];
+
+    // Agregar event listeners a módulos
+    document.querySelectorAll('.modulo-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const modulo = this.dataset.modulo;
+        const precio = parseInt(this.dataset.precio);
+
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          selectedModulos = selectedModulos.filter(m => m.modulo !== modulo);
+        } else {
+          this.classList.add('selected');
+          selectedModulos.push({ modulo, precio });
+        }
+        updatePresupuesto();
+      });
+    });
+
+    // Agregar event listeners a add-ons
+    document.querySelectorAll('.addon-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const addon = this.dataset.addon;
+        const precio = parseInt(this.dataset.precio);
+
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          selectedAddons = selectedAddons.filter(a => a.addon !== addon);
+        } else {
+          this.classList.add('selected');
+          selectedAddons.push({ addon, precio });
+        }
+        updatePresupuesto();
+      });
+    });
+
+    function updatePresupuesto() {
+      const modulosCosto = selectedModulos.reduce((sum, m) => sum + m.precio, 0);
+      const addonsCosto = selectedAddons.reduce((sum, a) => sum + a.precio, 0);
+      const subtotal = BASE_IMPLEMENTATION + modulosCosto + addonsCosto;
+
+      document.getElementById('modulos-precio').textContent = `Bs ${modulosCosto.toLocaleString()}`;
+      document.getElementById('addons-precio').textContent = `Bs ${addonsCosto.toLocaleString()}`;
+      document.getElementById('subtotal').textContent = `Bs ${subtotal.toLocaleString()}`;
+      document.getElementById('monto-total').textContent = `Bs ${subtotal.toLocaleString()}`;
+
+      // Actualizar botón
+      const btn = document.getElementById('btn-presupuesto');
+      btn.textContent = `Solicitar Presupuesto (Bs ${subtotal.toLocaleString()})`;
+    }
+
+    function resetCalculador() {
+      selectedModulos = [];
+      selectedAddons = [];
+      document.querySelectorAll('.modulo-card, .addon-item').forEach(el => {
+        el.classList.remove('selected');
+      });
+      updatePresupuesto();
+    }
+
+    function scrollTo(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value;
+      const empresa = document.getElementById('empresa').value;
+      const email = document.getElementById('email').value;
+      const telefono = document.getElementById('telefono').value;
+      const mensaje = document.getElementById('mensaje').value;
+
+      const modulosCosto = selectedModulos.reduce((sum, m) => sum + m.precio, 0);
+      const addonsCosto = selectedAddons.reduce((sum, a) => sum + a.precio, 0);
+      const subtotal = BASE_IMPLEMENTATION + modulosCosto + addonsCosto;
+
+      const modulosLista = selectedModulos.map(m => m.modulo).join(', ') || 'Ninguno adicional';
+      const addonsLista = selectedAddons.map(a => a.addon).join(', ') || 'Ninguno';
+
+      const texto = `
+*NUEVA SOLICITUD DE PRESUPUESTO - FORGE*
+
+📋 *Cliente:*
+Nombre: ${nombre}
+Empresa: ${empresa}
+Email: ${email}
+Teléfono: ${telefono}
+
+💰 *Presupuesto:*
+Implementación Base: Bs 12,500
+Módulos Adicionales: Bs ${modulosCosto}
+Opciones Adicionales: Bs ${addonsCosto}
+*TOTAL: Bs ${subtotal}*
+Mantenimiento: Bs 450/mes
+
+📦 *Módulos Seleccionados:* ${modulosLista}
+➕ *Add-ons:* ${addonsLista}
+
+📝 *Mensaje:*
+${mensaje || 'Sin comentarios adicionales'}
+      `;
+
+      const url = `https://wa.me/59176099651?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    }
+
+    // Inicializar
+    updatePresupuesto();
+  </script>
+</body>
+</html>
